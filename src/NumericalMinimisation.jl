@@ -1,6 +1,6 @@
 module NumericalMinimisation
 
-using NumericalMethods, LinearAlgebra
+using NumericalMethods, LinearAlgebra, ForwardDiff, DiffResults
 
 export brent, newton
 
@@ -123,7 +123,7 @@ function brent(f, ax, bx, cx; atol=1e-6, rtol=1e-6, max_iter=1000)
 end
 
 function newton(
-        f::Function, x_0::Real; δ=1e-6, atol=1e-6, rtol=1e-6, max_iter=1000
+        f::Function, x_0::Real, δ; atol=1e-6, rtol=1e-6, max_iter=1000
     )
     x_1 = x_0
     for i in 1:max_iter
@@ -137,8 +137,8 @@ function newton(
 end
 
 function newton(
-        f::Function, x_0::AbstractVector{<:Real};
-        δ=1e-6, atol=1e-6, rtol=1e-6, max_iter=1000
+        f::Function, x_0::AbstractVector{<:Real}, δ;
+        atol=1e-6, rtol=1e-6, max_iter=1000
     )
     x_1 = x_0
     for i in 1:max_iter
@@ -152,6 +152,43 @@ function newton(
         x_1 = x_2
     end
     throw(ConvergenceError("Maximum number of iterations exceeded."))
+end
+
+function newton(
+    f::Function, x_0::Real; atol=1e-6, rtol=1e-6, max_iter=1000
+    )
+    dx(z) = ForwardDiff.derivative(f, z)
+    x_1 = x_0
+    for i in 1:max_iter
+        dx = dx(x_1)
+        d2x = ForwardDiff.derivative(dx, x_1)
+        x_2 = x_1 - d2x\dx
+        if isapprox(x_2, x_1, atol=atol, rtol=rtol)
+            return x_2, f(x_2), i
+        end
+        x_1 = x_2
+    end
+    throw(ConvergenceError("Maximum number of iterations exceeded."))
+end
+
+function newton(
+    f::Function, x_0::AbstractVector{<:Real};
+    atol=1e-6, rtol=1e-6, max_iter=1000
+)
+x_1 = x_0
+for i in 1:max_iter
+    result = DiffResults.HessianResult(x_1)
+    result = ForwardDiff.hessian!(result, f, x_1)
+    hess = Symmetric(DiffResults.hessian(result))
+    grad = DiffResults.gradient(result)
+    Δx = hess\grad
+    x_2 = x_1 - Δx
+    if isapprox(x_2, x_1, atol=atol, rtol=rtol)
+        return x_2, f(x_2), i
+    end
+    x_1 = x_2
+end
+throw(ConvergenceError("Maximum number of iterations exceeded."))
 end
 
 end # module

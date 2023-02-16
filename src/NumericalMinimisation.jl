@@ -122,4 +122,18 @@ function brent(f, ax, bx, cx; atol=1e-6, rtol=1e-6, max_iter=1000)
     throw(ConvergenceError("Maximum number of iterations exceeded in brent."))
 end
 
+function newton(
+        f::Function, x_0::Real; δ=1e-6, atol=1e-6, rtol=1e-6, max_iter=1000
+    )
+    x_1 = x_0
+    for i in 1:max_iter
+        x_2 = x_1 - numderiv_two_side(f, x, δ=δ)/numderiv_second(f, x, δ=δ)
+        if isapprox(x_2, x_1, atol=atol, rtol=rtol)
+            return x_2, f(x_2), i
+        end
+        x_1 = x_2
+    end
+    throw(ConvergenceError("Maximum number of iterations exceeded."))
+end
+
 end # module

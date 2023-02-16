@@ -2,7 +2,7 @@ module NumericalMinimisation
 
 using NumericalMethods
 
-export brent
+export brent, newton
 
 mutable struct ConvergenceError <: Exception
     msg::AbstractString

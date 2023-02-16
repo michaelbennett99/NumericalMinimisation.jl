@@ -1,5 +1,7 @@
 module NumericalMinimisation
 
+using NumericalMethods
+
 export brent
 
 mutable struct ConvergenceError <: Exception

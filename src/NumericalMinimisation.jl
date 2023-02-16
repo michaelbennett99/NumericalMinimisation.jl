@@ -2,7 +2,7 @@ module NumericalMinimisation
 
 export brent
 
-struct ConvergenceError <: Exception
+mutable struct ConvergenceError <: Exception
     msg::AbstractString
 end
 

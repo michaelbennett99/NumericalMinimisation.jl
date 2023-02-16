@@ -1,6 +1,6 @@
 module NumericalMinimisation
 
-using NumericalMethods
+using NumericalMethods, LinearAlgebra
 
 export brent, newton
 
@@ -128,6 +128,24 @@ function newton(
     x_1 = x_0
     for i in 1:max_iter
         x_2 = x_1 - numderiv_two_side(f, x_1, δ=δ)/numderiv_second(f, x_1, δ=δ)
+        if isapprox(x_2, x_1, atol=atol, rtol=rtol)
+            return x_2, f(x_2), i
+        end
+        x_1 = x_2
+    end
+    throw(ConvergenceError("Maximum number of iterations exceeded."))
+end
+
+function newton(
+        f::Function, x_0::AbstractVector{<:Real};
+        δ=1e-6, atol=1e-6, rtol=1e-6, max_iter=1000
+    )
+    x_1 = x_0
+    for i in 1:max_iter
+        hess = Symmetric(hessian(f, x_1, δ=δ))
+        grad = gradient(f, x_1, δ=δ)
+        Δx = hess\grad
+        x_2 = x_1 - Δx
         if isapprox(x_2, x_1, atol=atol, rtol=rtol)
             return x_2, f(x_2), i
         end

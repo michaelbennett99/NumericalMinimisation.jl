@@ -127,7 +127,7 @@ function newton(
     )
     x_1 = x_0
     for i in 1:max_iter
-        x_2 = x_1 - numderiv_two_side(f, x, δ=δ)/numderiv_second(f, x, δ=δ)
+        x_2 = x_1 - numderiv_two_side(f, x_1, δ=δ)/numderiv_second(f, x_1, δ=δ)
         if isapprox(x_2, x_1, atol=atol, rtol=rtol)
             return x_2, f(x_2), i
         end

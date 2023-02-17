@@ -160,7 +160,7 @@ function newton(
     f_dx(z) = ForwardDiff.derivative(f, z)
     x_1 = x_0
     for i in 1:max_iter
-        dx = dx(x_1)
+        dx = f_dx(x_1)
         d2x = ForwardDiff.derivative(f_dx, x_1)
         x_2 = x_1 - d2x\dx
         if isapprox(x_2, x_1, atol=atol, rtol=rtol)

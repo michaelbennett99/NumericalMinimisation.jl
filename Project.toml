@@ -3,6 +3,12 @@ uuid = "feb8660d-1c85-4bbd-9dd3-8a7542681c83"
 authors = ["Michael Bennett"]
 version = "0.1.0"
 
+[deps]
+DiffResults = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NumericalMethods = "fd3c36b2-d619-4b64-906f-73477278ed8e"
+
 [compat]
 julia = "1"
 
